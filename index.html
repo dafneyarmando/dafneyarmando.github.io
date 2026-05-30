@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Invitación digital de boda de Dafne y Armando.">
+  <title>Dafne & Armando | Invitación</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="intro" id="intro" aria-label="Preportada de la invitación">
+    <div class="intro__content">
+      <p class="intro__eyebrow">Invitación digital</p>
+
+      <div class="scene" id="introScene" aria-hidden="false">
+        <div class="floor-shadow" aria-hidden="true"></div>
+
+        <section class="mail-stage">
+          <div class="invitation-card-stage" aria-hidden="true">
+            <article class="invitation-card">
+              <div class="invitation-card__content">
+                <p class="invitation-card__eyebrow">Nos casamos</p>
+                <p class="invitation-card__line">
+                  <span class="invitation-card__name">Dafne</span>
+                  <span class="invitation-card__ampersand">&</span>
+                  <span class="invitation-card__name">Armando</span>
+                </p>
+                <p class="invitation-card__date">20 de marzo de 2027</p>
+              </div>
+            </article>
+          </div>
+
+          <article class="envelope" aria-hidden="true">
+            <div class="back-panel"></div>
+            <div class="flap"></div>
+
+            <div class="front">
+              <div class="front-left"></div>
+              <div class="front-right"></div>
+              <div class="front-bottom"></div>
+              <div class="front-lines"><span></span></div>
+            </div>
+
+            <button class="seal-trigger" id="openInvitation" type="button" aria-label="Abrir invitación">
+              <img src="images/sello-personalizado.png" alt="" class="seal-trigger__image">
+            </button>
+
+            <div class="shine" aria-hidden="true"></div>
+          </article>
+        </section>
+
+        <p class="intro__hint">Toca el sello para abrir</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="site is-hidden" id="siteContent">
+    <header class="site-header">
+      <a href="#inicio" class="brand" aria-label="Inicio">
+        <span class="brand__letter">D</span>
+        <span class="brand__ampersand">&</span>
+        <span class="brand__letter">A</span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav" id="navMenu">
+        <a href="#inicio">Inicio</a>
+        <a href="#celebracion">Celebración</a>
+        <a href="#dresscode">Dress code</a>
+        <a href="#regalos">Regalos</a>
+        <a href="#rsvp">Confirmación</a>
+        <a href="#hospedaje">Hospedaje</a>
+        <a href="#fotos-evento">Fotos del evento</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero section" id="inicio">
+        <div class="hero__text reveal">
+          <p class="eyebrow">Nuestro amor es un eco que atraviesa el tiempo</p>
+          <h1 class="hero__names">
+            <span class="hero__name">Dafne</span>
+            <span class="hero__ampersand">&</span>
+            <span class="hero__name">Armando</span>
+          </h1>
+          <p class="hero__date">Sábado 20 de marzo de 2027 | 7:00 PM</p>
+          <p class="hero__copy">
+              Celebramos con ustedes el día en que uniremos nuestras vidas.
+          </p>
+
+          <div class="countdown-wrap" aria-label="Cuenta regresiva para la boda">
+            <p class="countdown__intro">Cuenta regresiva</p>
+            <div class="countdown" id="countdown">
+              <div class="countdown__item">
+                <span class="countdown__number" id="countdownDays">00</span>
+                <span class="countdown__label">Días</span>
+              </div>
+              <div class="countdown__item">
+                <span class="countdown__number" id="countdownHours">00</span>
+                <span class="countdown__label">Horas</span>
+              </div>
+              <div class="countdown__item">
+                <span class="countdown__number" id="countdownMinutes">00</span>
+                <span class="countdown__label">Min</span>
+              </div>
+              <div class="countdown__item">
+                <span class="countdown__number" id="countdownSeconds">00</span>
+                <span class="countdown__label">Seg</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__actions">
+            <a class="button button--primary" href="#celebracion">Ver detalles</a>
+            <a class="button button--ghost" href="#rsvp">Confirmar asistencia</a>
+          </div>
+        </div>
+
+        <div class="hero__visual hero-carousel reveal">
+          <div class="hero-carousel" data-carousel aria-label="Galería destacada de la pareja">
+            <div class="hero-carousel__viewport carousel__track-container">
+              <div class="hero-carousel__track carousel__track" data-carousel-track>
+                <img src="images/portada.jpg" alt="Foto principal de la pareja" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (2).jpg" alt="Foto adicional de la pareja 3" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (3).jpg" alt="Foto adicional de la pareja 4" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (4).jpg" alt="Foto adicional de la pareja 5" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (5).jpg" alt="Foto adicional de la pareja 6" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (6).jpg" alt="Foto adicional de la pareja 7" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (7).jpg" alt="Foto adicional de la pareja 8" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (9).jpg" alt="Foto adicional de la pareja 10" class="hero-carousel__slide hero__photo carousel__slide">
+                <img src="images/carusel (10).jpg" alt="Foto adicional de la pareja 11" class="hero-carousel__slide hero__photo carousel__slide">
+              </div>
+            </div>
+
+            <button class="hero-carousel__button hero-carousel__button--prev carousel__button" data-carousel-prev aria-label="Foto anterior">‹</button>
+            <button class="hero-carousel__button hero-carousel__button--next carousel__button" data-carousel-next aria-label="Foto siguiente">›</button>
+
+            <div class="hero-carousel__dots" data-carousel-dots aria-label="Selector de fotos">
+              <button class="hero-carousel__dot is-active" type="button" aria-label="Ver foto 1"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 2"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 3"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 4"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 5"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 6"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 7"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 8"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 9"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 10"></button>
+              <button class="hero-carousel__dot" type="button" aria-label="Ver foto 11"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+<section class="section summary" id="celebracion">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Celebración</p>
+          <h2>Detalles del día</h2>
+        </div>
+
+        <div class="summary__grid summary__grid--venues">
+          <article class="event-card reveal">
+            <div class="event-card__image-wrap">
+              <img src="images/capilla.webp" alt="Vista de la ceremonia" class="event-card__image">
+            </div>
+
+            <div class="event-card__content">
+              <p class="event-card__eyebrow">Ceremonia</p>
+              <h3 class="event-card__title">Templo de San Juan Macías</h3>
+              <p class="event-card__time">7:00 PM</p>
+              <p class="event-card__address">Camino a San Nicolás Ocotillo, 45422, Tonalá, Jalisco.</p>
+              <a href="https://www.google.com/maps/search/?api=1&query=Templo+de+San+Juan+Mac%C3%ADas+Tonal%C3%A1+Jalisco" class="button button--primary event-card__button" target="_blank" rel="noopener noreferrer">Ver en Google Maps</a>
+            </div>
+          </article>
+
+          <article class="event-card reveal">
+            <div class="event-card__image-wrap">
+              <img src="images/hacienda.webp" alt="Vista de la recepción" class="event-card__image">
+            </div>
+
+            <div class="event-card__content">
+              <p class="event-card__eyebrow">Recepción</p>
+              <h3 class="event-card__title">Hacienda Los Amadeos</h3>
+              <p class="event-card__time">8:30 PM</p>
+              <p class="event-card__address">Camino a San Nicolás Ocotillo, 45422, Tonalá, Jalisco</p>
+              <a href="https://www.google.com/maps/search/?api=1&query=Hacienda+Los+Amadeos+Tonal%C3%A1+Jalisco" class="button button--primary event-card__button" target="_blank" rel="noopener noreferrer">Ver en Google Maps</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+
+      <section class="section timeline" id="itinerario">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Agenda</p>
+          <h2>Itinerario</h2>
+        </div>
+
+        <div class="timeline__list">
+          <article class="timeline__item reveal">
+            <div class="timeline__time">6:30 PM</div>
+            <div class="timeline__content">
+              <h3>Llegada de invitados</h3>
+              <p>Te recomendamos llegar con tiempo para tomar tu lugar con calma.</p>
+            </div>
+          </article>
+
+          <article class="timeline__item reveal">
+            <div class="timeline__time">7:00 PM</div>
+            <div class="timeline__content">
+              <h3>Ceremonia</h3>
+              <p>Comenzaremos puntualmente para vivir este momento junto a ustedes desde el inicio.</p>
+            </div>
+          </article>
+
+          <article class="timeline__item reveal">
+            <div class="timeline__time">8:30 PM</div>
+            <div class="timeline__content">
+              <h3>Recepción</h3>
+              <p>Brindis, cena y una celebración pensada para disfrutar y compartir.</p>
+            </div>
+          </article>
+
+          <article class="timeline__item reveal">
+            <div class="timeline__time">10:00 PM</div>
+            <div class="timeline__content">
+              <h3>Fiesta</h3>
+              <p>Después de la cena abrimos pista para celebrar juntos hasta el final de la noche.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section attire" id="dresscode">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Dress code</p>
+          <h2>Formal · Etiqueta</h2>
+        </div>
+
+        <article class="dress-editorial reveal">
+          <div class="dress-editorial__frame">
+            <p class="dress-editorial__copy">
+              Les agradecemos asistir con vestimenta formal de noche.
+            </p>
+
+            <div class="dress-editorial__illustration" aria-hidden="true">
+              <img src="images/dresscode.png" alt="">
+            </div>
+
+            <div class="dress-editorial__notes">
+              <div class="dress-editorial__note">
+                <span class="dress-editorial__label">Agradecemos evitar</span>
+                <p>Blanco, marfil y tonos muy similares.</p>
+              </div>
+              <div class="dress-editorial__note">
+                <span class="dress-editorial__label">A considerar</span>
+                <p>Celebración nocturna · abrigo ligero sugerido.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section gifts" id="regalos">
+        <div class="section-heading reveal">
+          <p class="eyebrow"></p>
+          <h2>Regalos</h2>
+        </div>
+
+        <article class="gifts-invitation-card reveal">
+          <div class="gifts-invitation-card__top">
+            <p class="gifts-invitation-card__eyebrow">Su presencia es nuestro mejor regalo</p>
+            <p class="gifts-invitation-card__message">
+              Quienes deseen acompañarnos con un detalle, podrán hacerlo a través de estas opciones.
+            </p>
+          </div>
+
+          <div class="gifts-invitation-divider" aria-hidden="true"></div>
+
+          <div class="gifts-invitation-grid">
+            <article class="gifts-invitation-option">
+              <h3>Transferencia</h3>
+              <p><strong>Titular</strong><br>Armando Q. Angulo Chavira</p>
+              <p><strong>Banco</strong><br>BBVA Bancomer</p>
+              <p><strong>CLABE</strong><br>012320011676799392</p>
+            </article>
+
+            <article class="gifts-invitation-option">
+              <h3>Detalle en sobre</h3>
+              <p>
+                El día del evento habrá una caja destinada para sobres, por si desean acompañarnos también de esta manera y dejarnos un mensaje.
+              </p>
+              <div class="gift-option__art" aria-hidden="true">
+                <svg class="gift-option__envelope-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="22" y="34" width="116" height="72" rx="8"></rect>
+                  <path d="M22 44 L80 84 L138 44"></path>
+                  <path d="M22 106 L62 72"></path>
+                  <path d="M138 106 L98 72"></path>
+                </svg>
+              </div>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <section class="section rsvp" id="rsvp">
+        <div class="section-heading reveal">
+          <p class="eyebrow">RSVP</p>
+          <h2>Confirmación</h2>
+        </div>
+
+        <article class="rsvp-card reveal">
+          <p class="rsvp-card__copy">
+            Les agradeceremos confirmar su asistencia por este medio.
+          </p>
+
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSe4yxjHhCmpN0tySOtfmD-85Y3h4Fng6LaCQKwKNqIatHYNyA/viewform"
+            class="button button--primary"
+            target="_blank"
+            rel="noopener noreferrer">
+            Confirmar asistencia
+          </a>
+
+          <p class="rsvp-card__note">
+            Favor de responder antes del 20 de febrero del 2027.
+          </p>
+        </article>
+      </section>
+
+      <section class="section lodging" id="hospedaje">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Para invitados foráneos</p>
+          <h2>Hospedaje</h2>
+          <p>Compartimos algunas opciones cercanas para quienes nos acompañan desde fuera.</p>
+        </div>
+
+        <div class="lodging-grid">
+          <article class="place-card reveal">
+            <p class="place-card__eyebrow">Hotel boutique</p>
+            <h3>Santo Santiago Hotel</h3>
+            <p>Av. Benito Juárez 314, Tonalá Centro, C.P. 45400, Tonalá, Jalisco.</p>
+            <div class="place-card__actions">
+              <a href="https://santosantiagohotel.com/" class="button button--primary" target="_blank" rel="noopener noreferrer">Sitio web</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Av.+Benito+Ju%C3%A1rez+314%2C+Tonal%C3%A1+Centro%2C+45400%2C+Tonal%C3%A1%2C+Jalisco" class="button button--ghost" target="_blank" rel="noopener noreferrer">Ver mapa</a>
+            </div>
+          </article>
+
+          <article class="place-card reveal">
+            <p class="place-card__eyebrow">Opción céntrica</p>
+            <h3>Casa de las Palomas</h3>
+            <p>Anesagasti 125, Colonia Centro, C.P. 45400, Tonalá, Jalisco.</p>
+            <div class="place-card__actions">
+              <a href="https://casadelaspalomas.com.mx/" class="button button--primary" target="_blank" rel="noopener noreferrer">Sitio web</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Anesagasti+125%2C+Colonia+Centro%2C+45400%2C+Tonal%C3%A1%2C+Jalisco" class="button button--ghost" target="_blank" rel="noopener noreferrer">Ver mapa</a>
+            </div>
+          </article>
+
+          <article class="place-card reveal">
+            <p class="place-card__eyebrow">Alternativa cercana</p>
+            <h3>Hotel Tonalá</h3>
+            <p>Francisco I. Madero 22, Tonalá Centro, C.P. 45400, Tonalá, Jalisco.</p>
+            <div class="place-card__actions">
+              <a href="https://hoteltonala.com/" class="button button--primary" target="_blank" rel="noopener noreferrer">Sitio web</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Francisco+I.+Madero+22%2C+Tonal%C3%A1+Centro%2C+45400%2C+Tonal%C3%A1%2C+Jalisco" class="button button--ghost" target="_blank" rel="noopener noreferrer">Ver mapa</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section memories" id="fotos-evento">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Recuerdos del día</p>
+          <h2>Fotos del evento</h2>
+        </div>
+
+        <div class="memories__grid">
+          <article class="card reveal card--centered">
+            <h3>Sube tus fotos</h3>
+            <p>
+              Comparte aquí las fotos que tomes durante la celebración para reunir los recuerdos del día.
+            </p>
+            <a href="https://www.dropbox.com/request/5q7olmkuauvudkk9uein/" class="button button--primary" target="_blank" rel="noopener noreferrer">Subir fotos</a>
+          </article>
+
+          <article class="card reveal card--centered">
+            <h3>Galería final del evento</h3>
+            <p>
+              Aquí podrás consultar la selección final de fotos del fotógrafo y de nuestros invitados.
+            </p>
+            <a href="galeria-evento.html" class="button button--primary">Ir a la galería del evento</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section faq" id="faq">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Información adicional</p>
+          <h2>Preguntas frecuentes</h2>
+        </div>
+
+        <div class="faq__list">
+          <details class="faq__item reveal">
+            <summary>¿Habrá estacionamiento?</summary>
+            <p>El lugar cuenta con estacionamiento amplio, pero no tiene valet parking.</p>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary>¿La ceremonia y la recepción son en el mismo lugar?</summary>
+            <p>Sì, ambos eventos son en el mismo lugar.</p>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary>¿Se permiten niños?</summary>
+            <p>
+              Aunque adoramos a los pequeños, en esta ocasión queremos que sus papás disfruten de una noche libre. Agradecemos mucho su comprensión.
+            </p>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary>¿Hasta cuándo puedo confirmar asistencia?</summary>
+            <p>Favor de confirmar antes del 20 de febrero del 2027</p>
+          </details>
+        </div>
+      </section>
+</main>
+
+    <footer class="site-footer">
+      <p>Dafne &amp; Armando</p>
+      <p>Gracias por acompañarnos en este momento tan importante.</p>
+      <p class="site-footer__year">© <span id="currentYear"></span></p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
