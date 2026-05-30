@@ -1894,3 +1894,28 @@ img.hero-carousel__slide {
     align-items: stretch;
   }
 }
+@media (max-width: 640px) {
+  .intro {
+    padding: 1rem;
+  }
+
+  .intro__content {
+    width: 100%;
+  }
+
+  .scene {
+    width: 100%;
+    min-height: 560px;
+    margin: 0 auto;
+  }
+
+  .mail-stage {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .intro__hint {
+    margin-top: 0.75rem;
+  }
+}
