@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Confirmación de asistencia para la boda de Dafne y Armando.">
+  <title>RSVP | Dafne & Armando</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <!-- Reutiliza el estilo base de tu sitio -->
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .rsvp-page {
+      min-height: 100vh;
+      padding: clamp(1.25rem, 4vw, 3rem) 1rem 3rem;
+    }
+
+    .rsvp-shell {
+      width: min(100%, 820px);
+      margin: 0 auto;
+    }
+
+    .rsvp-back {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      margin-bottom: 1.25rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .rsvp-back:hover {
+      color: var(--accent);
+    }
+
+    .rsvp-heading {
+      text-align: center;
+      margin: 0 auto 1.75rem;
+    }
+
+    .rsvp-heading .eyebrow {
+      margin-bottom: .45rem;
+    }
+
+    .rsvp-heading h1 {
+      margin: 0;
+      font-size: clamp(2.6rem, 7vw, 4.5rem);
+      line-height: .98;
+      font-weight: 600;
+    }
+
+    .rsvp-heading p:last-child {
+      max-width: 590px;
+      margin: .8rem auto 0;
+      color: var(--muted);
+      font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+      line-height: 1.45;
+    }
+
+    .rsvp-panel {
+      padding: clamp(1.25rem, 4vw, 2rem);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .rsvp-label {
+      display: block;
+      margin-bottom: .55rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .rsvp-input,
+    .rsvp-select {
+      width: 100%;
+      min-height: 56px;
+      padding: .85rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.82);
+      color: var(--text);
+      font: inherit;
+      font-size: 1.18rem;
+      outline: none;
+    }
+
+    .rsvp-input:focus,
+    .rsvp-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(127,63,57,.08);
+    }
+
+    .rsvp-results {
+      margin-top: .55rem;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .rsvp-result {
+      width: 100%;
+      padding: .9rem 1rem;
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      background: rgba(255,255,255,.92);
+      color: var(--text);
+      text-align: left;
+      font: inherit;
+      font-size: 1.13rem;
+      cursor: pointer;
+    }
+
+    .rsvp-result:first-child {
+      border-radius: 16px 16px 0 0;
+    }
+
+    .rsvp-result:last-child {
+      border-bottom: 1px solid var(--border);
+      border-radius: 0 0 16px 16px;
+    }
+
+    .rsvp-result:only-child {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .rsvp-result:hover,
+    .rsvp-result:focus-visible {
+      background: var(--bg-soft);
+    }
+
+    .rsvp-form-area {
+      margin-top: 1.65rem;
+    }
+
+    .rsvp-form-heading {
+      text-align: center;
+      margin-bottom: 1.15rem;
+    }
+
+    .rsvp-form-heading h2 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1;
+    }
+
+    .rsvp-form-heading p {
+      margin: .65rem auto 0;
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.45;
+    }
+
+    .guest-card {
+      margin-bottom: 1rem;
+      padding: clamp(1.2rem, 4vw, 1.65rem);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(255,255,255,.56);
+      box-shadow: 0 12px 28px rgba(66,38,34,.07);
+    }
+
+    .guest-name {
+      margin: 0 0 .9rem;
+      font-size: clamp(1.4rem, 4vw, 1.7rem);
+      font-weight: 600;
+      line-height: 1.15;
+    }
+
+    .saved-state {
+      display: inline-block;
+      margin: 0 0 .9rem;
+      padding: .35rem .7rem;
+      border-radius: 999px;
+      background: rgba(127,63,57,.08);
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .question {
+      margin-top: .75rem;
+      font-size: 1.15rem;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .7rem;
+      margin-top: .7rem;
+    }
+
+    .choice {
+      position: relative;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice span {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: .7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.56);
+      font-size: 1.12rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .choice input:checked + span {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .choice input:focus-visible + span {
+      outline: 2px solid rgba(127,63,57,.45);
+      outline-offset: 3px;
+    }
+
+    .extras {
+      display: none;
+      margin-top: 1.15rem;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .extra-block + .extra-block {
+      margin-top: 1.15rem;
+    }
+
+    .extra-label {
+      display: block;
+      margin-bottom: .55rem;
+      font-size: 1.12rem;
+      font-weight: 600;
+    }
+
+    .companion-name {
+      display: none;
+      margin-top: .9rem;
+    }
+
+    .child-card {
+      margin-top: .8rem;
+      padding: 1rem;
+      border: 1px solid rgba(127,63,57,.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,.48);
+    }
+
+    .child-card strong {
+      display: block;
+      margin-bottom: .55rem;
+      color: var(--accent);
+    }
+
+    .child-card .rsvp-input + .rsvp-input {
+      margin-top: .55rem;
+    }
+
+    .rsvp-save {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 1.25rem;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s ease, filter .2s ease;
+    }
+
+    .rsvp-save:hover {
+      transform: translateY(-2px);
+      filter: brightness(.96);
+    }
+
+    .rsvp-save:disabled {
+      opacity: .55;
+      cursor: wait;
+      transform: none;
+    }
+
+    .rsvp-message {
+      margin-top: .8rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .rsvp-error {
+      margin-top: .8rem;
+      color: #8b2424;
+      font-size: 1.05rem;
+    }
+
+    .thank-you {
+      min-height: calc(100vh - 6rem);
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .thank-you__card {
+      width: min(100%, 680px);
+      padding: clamp(2rem, 7vw, 4rem);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .thank-you__names {
+      margin: .15rem 0 1.2rem;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(3.4rem, 12vw, 5.5rem);
+      line-height: .9;
+      font-weight: 400;
+    }
+
+    .thank-you__names span {
+      color: var(--accent);
+      font-size: .55em;
+    }
+
+    .thank-you h1 {
+      margin: 0 0 .8rem;
+      font-size: clamp(2.2rem, 7vw, 3.4rem);
+      line-height: 1;
+    }
+
+    .thank-you__copy {
+      max-width: 520px;
+      margin: 0 auto 1.5rem;
+      color: var(--muted);
+      font-size: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .thank-you__note {
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      opacity: .8;
+    }
+
+    .is-hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .rsvp-page {
+        padding: 1rem .75rem 2rem;
+      }
+
+      .rsvp-shell {
+        width: 100%;
+      }
+
+      .rsvp-back {
+        margin-bottom: .9rem;
+        font-size: 1.1rem;
+      }
+
+      .rsvp-heading {
+        margin-bottom: 1.25rem;
+      }
+
+      .rsvp-heading h1 {
+        font-size: 3rem;
+      }
+
+      .rsvp-heading p:last-child {
+        font-size: 1.25rem;
+        line-height: 1.35;
+      }
+
+      .rsvp-panel {
+        padding: 1.15rem;
+        border-radius: 22px;
+      }
+
+      .rsvp-label {
+        font-size: 1.25rem;
+      }
+
+      .rsvp-input,
+      .rsvp-select {
+        min-height: 58px;
+        font-size: 18px; /* evita zoom y mejora lectura */
+      }
+
+      .rsvp-result {
+        padding: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .rsvp-form-heading h2 {
+        font-size: 2.35rem;
+      }
+
+      .rsvp-form-heading p {
+        font-size: 1.18rem;
+      }
+
+      .guest-card {
+        padding: 1.15rem;
+        border-radius: 18px;
+      }
+
+      .guest-name {
+        font-size: 1.55rem;
+      }
+
+      .question,
+      .extra-label {
+        font-size: 1.2rem;
+      }
+
+      .choice span {
+        min-height: 56px;
+        font-size: 1.2rem;
+      }
+
+      .rsvp-save {
+        min-height: 60px;
+        font-size: 1.3rem;
+      }
+
+      .thank-you {
+        min-height: calc(100vh - 3rem);
+      }
+
+      .thank-you__card {
+        padding: 2.25rem 1.25rem;
+        border-radius: 22px;
+      }
+
+      .thank-you__copy {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="rsvp-page" id="app">
+    <div class="rsvp-shell">
+      <a href="./" class="rsvp-back">← Volver a la invitación</a>
+
+      <header class="rsvp-heading">
+        <p class="eyebrow">RSVP</p>
+        <h1>Confirma tu asistencia</h1>
+        <p>Busca tu nombre para encontrar tu invitación.</p>
+      </header>
+
+      <section class="rsvp-panel" id="searchPanel">
+        <label class="rsvp-label" for="searchInput">Nombre o apellido</label>
+        <input
+          class="rsvp-input"
+          type="text"
+          id="searchInput"
+          placeholder="Escribe tu nombre o apellido"
+          autocomplete="off"
+        >
+        <div class="rsvp-results" id="results"></div>
+      </section>
+
+      <section class="rsvp-form-area" id="invitationArea"></section>
+
+      <button class="rsvp-save is-hidden" id="saveButton" type="button">
+        Guardar confirmación
+      </button>
+
+      <div id="statusMessage"></div>
+    </div>
+  </main>
+
+  <!-- El POST se manda aquí; Apps Script nunca se muestra al invitado -->
+  <iframe name="rsvpPostTarget" id="rsvpPostTarget" hidden></iframe>
+
+  <script>
+    // ==========================================================
+    // IMPORTANTE:
+    // Pega aquí la URL /exec de tu implementación de Apps Script
+    // ==========================================================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxWnOK8CQowjPKUAiQBeKKLCfz2Yi_8CqO7iZIzttr0G7lRJXsbEFMLkxEugyj7SeOS/exec';
+
+    const HOME_URL = './';
+
+    let searchTimer;
+    let searchVersion = 0;
+    let invitationData = null;
+
+    const searchInput = document.getElementById('searchInput');
+    const results = document.getElementById('results');
+    const invitationArea = document.getElementById('invitationArea');
+    const saveButton = document.getElementById('saveButton');
+    const statusMessage = document.getElementById('statusMessage');
+    const app = document.getElementById('app');
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+
+      const query = searchInput.value.trim();
+      const thisSearch = ++searchVersion;
+
+      results.innerHTML = '';
+      invitationArea.innerHTML = '';
+      statusMessage.innerHTML = '';
+      saveButton.classList.add('is-hidden');
+      invitationData = null;
+
+      if (query.length < 3) return;
+
+      results.innerHTML = '<div class="rsvp-message">Buscando…</div>';
+
+      searchTimer = setTimeout(async () => {
+        try {
+          const response = await jsonp({
+            action: 'buscar',
+            q: query
+          });
+
+          if (thisSearch !== searchVersion) return;
+
+          renderSearchResults(response.resultados || []);
+        } catch (error) {
+          if (thisSearch !== searchVersion) return;
+          showSearchError(error);
+        }
+      }, 350);
+    });
+
+    function renderSearchResults(people) {
+      results.innerHTML = '';
+
+      if (!people.length) {
+        results.innerHTML =
+          '<div class="rsvp-message">No encontramos coincidencias.</div>';
+        return;
+      }
+
+      people.forEach(person => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'rsvp-result';
+        button.textContent = person.nombre;
+
+        button.addEventListener('click', () => loadInvitation(person));
+
+        results.appendChild(button);
+      });
+    }
+
+    async function loadInvitation(person) {
+      searchInput.value = person.nombre;
+      results.innerHTML = '';
+      invitationArea.innerHTML =
+        '<div class="rsvp-message">Buscando tu invitación…</div>';
+      saveButton.classList.add('is-hidden');
+      statusMessage.innerHTML = '';
+
+      try {
+        const response = await jsonp({
+          action: 'invitacion',
+          id: person.id
+        });
+
+        invitationData = response.invitacion;
+        renderInvitation(invitationData);
+      } catch (error) {
+        invitationArea.innerHTML =
+          '<div class="rsvp-error">' + escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderInvitation(data) {
+      invitationArea.innerHTML = '';
+
+      const heading = document.createElement('div');
+      heading.className = 'rsvp-form-heading';
+      heading.innerHTML = `
+        <h2>Confirma la asistencia</h2>
+        <p>Puedes responder por una o varias personas de tu invitación.</p>
+      `;
+      invitationArea.appendChild(heading);
+
+      data.integrantes.forEach(person => {
+        invitationArea.appendChild(createGuestCard(person));
+      });
+
+      saveButton.classList.remove('is-hidden');
+    }
+
+    function createGuestCard(person) {
+      const card = document.createElement('article');
+      card.className = 'guest-card';
+      card.dataset.id = person.id;
+
+      const name = document.createElement('h3');
+      name.className = 'guest-name';
+      name.textContent = person.nombre;
+      card.appendChild(name);
+
+      if (person.confirmacion) {
+        const state = document.createElement('div');
+        state.className = 'saved-state';
+        state.textContent = 'Tu respuesta actual está guardada';
+        card.appendChild(state);
+      }
+
+      const question = document.createElement('div');
+      question.className = 'question';
+      question.innerHTML = '<strong>¿Asistirás?</strong>';
+      card.appendChild(question);
+
+      const attendanceChoices = createChoiceRow(
+        'asiste_' + person.id,
+        [
+          { value: '1', label: 'Sí' },
+          { value: '0', label: 'No' }
+        ]
+      );
+      card.appendChild(attendanceChoices);
+
+      const extras = document.createElement('div');
+      extras.className = 'extras';
+      extras.id = 'extras_' + person.id;
+
+      if (person.acompanante) {
+        const companionBlock = document.createElement('div');
+        companionBlock.className = 'extra-block';
+
+        const companionQuestion = document.createElement('div');
+        companionQuestion.className = 'extra-label';
+        companionQuestion.textContent = '¿Llevarás acompañante?';
+        companionBlock.appendChild(companionQuestion);
+
+        companionBlock.appendChild(
+          createChoiceRow(
+            'acompanante_' + person.id,
+            [
+              { value: '1', label: 'Sí' },
+              { value: '0', label: 'No' }
+            ]
+          )
+        );
+
+        const companionName = document.createElement('div');
+        companionName.className = 'companion-name';
+        companionName.id = 'companionName_' + person.id;
+        companionName.innerHTML = `
+          <label class="extra-label" for="companionInput_${escapeAttr(person.id)}">
+            Nombre completo del acompañante
+          </label>
+          <input
+            class="rsvp-input"
+            type="text"
+            id="companionInput_${escapeAttr(person.id)}"
+            autocomplete="off"
+          >
+        `;
+        companionBlock.appendChild(companionName);
+        extras.appendChild(companionBlock);
+      }
+
+      if (person.ninos && person.maxNinos > 0) {
+        const childrenBlock = document.createElement('div');
+        childrenBlock.className = 'extra-block';
+
+        const childrenLabel = document.createElement('label');
+        childrenLabel.className = 'extra-label';
+        childrenLabel.setAttribute('for', 'children_' + person.id);
+        childrenLabel.textContent = '¿Cuántos menores de 12 años asistirán?';
+        childrenBlock.appendChild(childrenLabel);
+
+        const select = document.createElement('select');
+        select.className = 'rsvp-select';
+        select.id = 'children_' + person.id;
+
+        for (let i = 0; i <= person.maxNinos; i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = i;
+          select.appendChild(option);
+        }
+
+        childrenBlock.appendChild(select);
+
+        const details = document.createElement('div');
+        details.id = 'childrenDetails_' + person.id;
+        childrenBlock.appendChild(details);
+
+        select.addEventListener('change', () => {
+          renderChildren(
+            person.id,
+            Number(select.value),
+            []
+          );
+        });
+
+        extras.appendChild(childrenBlock);
+      }
+
+      card.appendChild(extras);
+
+      card
+        .querySelectorAll('input[name="asiste_' + CSS.escape(person.id) + '"]')
+        .forEach(radio => {
+          radio.addEventListener('change', () => {
+            updateExtras(person.id, radio.value === '1');
+          });
+        });
+
+      if (person.acompanante) {
+        card
+          .querySelectorAll('input[name="acompanante_' + CSS.escape(person.id) + '"]')
+          .forEach(radio => {
+            radio.addEventListener('change', () => {
+              const field = document.getElementById('companionName_' + person.id);
+              field.style.display = radio.value === '1' ? 'block' : 'none';
+            });
+          });
+      }
+
+      loadExistingConfirmation(card, person);
+
+      return card;
+    }
+
+    function createChoiceRow(name, options) {
+      const row = document.createElement('div');
+      row.className = 'choice-row';
+
+      options.forEach(option => {
+        const label = document.createElement('label');
+        label.className = 'choice';
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = name;
+        input.value = option.value;
+
+        const span = document.createElement('span');
+        span.textContent = option.label;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        row.appendChild(label);
+      });
+
+      return row;
+    }
+
+    function loadExistingConfirmation(card, person) {
+      if (!person.confirmacion) return;
+
+      const attendanceValue = person.confirmacion.asiste ? '1' : '0';
+      const attendanceRadio = card.querySelector(
+        'input[name="asiste_' + CSS.escape(person.id) + '"][value="' +
+        attendanceValue + '"]'
+      );
+
+      if (attendanceRadio) attendanceRadio.checked = true;
+
+      updateExtras(person.id, person.confirmacion.asiste);
+
+      if (person.confirmacion.asiste && person.acompanante) {
+        const companionValue =
+          person.confirmacion.llevaAcompanante ? '1' : '0';
+
+        const companionRadio = card.querySelector(
+          'input[name="acompanante_' + CSS.escape(person.id) + '"][value="' +
+          companionValue + '"]'
+        );
+
+        if (companionRadio) companionRadio.checked = true;
+
+        if (person.confirmacion.llevaAcompanante) {
+          const wrapper =
+            document.getElementById('companionName_' + person.id);
+          const input =
+            document.getElementById('companionInput_' + person.id);
+
+          wrapper.style.display = 'block';
+          input.value = person.confirmacion.nombreAcompanante || '';
+        }
+      }
+
+      if (person.confirmacion.asiste && person.ninos) {
+        const select = document.getElementById('children_' + person.id);
+
+        if (select) {
+          select.value = person.confirmacion.numeroNinos || 0;
+
+          renderChildren(
+            person.id,
+            Number(select.value),
+            person.confirmacion.ninosDetalle || []
+          );
+        }
+      }
+    }
+
+    function updateExtras(id, attends) {
+      const extras = document.getElementById('extras_' + id);
+      if (!extras) return;
+      extras.style.display = attends ? 'block' : 'none';
+    }
+
+    function renderChildren(id, count, existing) {
+      const container = document.getElementById('childrenDetails_' + id);
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      for (let i = 0; i < count; i++) {
+        const values = existing[i] || {};
+
+        const child = document.createElement('div');
+        child.className = 'child-card';
+        child.innerHTML = `
+          <strong>Menor ${i + 1}</strong>
+          <input
+            class="rsvp-input"
+            type="text"
+            placeholder="Nombre"
+            data-child-name="${escapeAttr(id)}"
+            value="${escapeAttr(values.nombre || '')}"
+          >
+          <input
+            class="rsvp-input"
+            type="number"
+            min="0"
+            max="11"
+            inputmode="numeric"
+            placeholder="Edad"
+            data-child-age="${escapeAttr(id)}"
+            value="${escapeAttr(values.edad || '')}"
+          >
+        `;
+
+        container.appendChild(child);
+      }
+    }
+
+    saveButton.addEventListener('click', saveConfirmations);
+
+    async function saveConfirmations() {
+      if (!invitationData) return;
+
+      statusMessage.innerHTML = '';
+
+      const respuestas = [];
+
+      for (const person of invitationData.integrantes) {
+        const card = document.querySelector(
+          '.guest-card[data-id="' + CSS.escape(person.id) + '"]'
+        );
+
+        const attendance = card.querySelector(
+          'input[name="asiste_' + CSS.escape(person.id) + '"]:checked'
+        );
+
+        // Si no responde por esta persona, no se modifica.
+        if (!attendance) continue;
+
+        const attends = attendance.value === '1';
+
+        const response = {
+          id: person.id,
+          asiste: attends,
+          llevaAcompanante: false,
+          nombreAcompanante: '',
+          numeroNinos: 0,
+          ninosDetalle: []
+        };
+
+        if (attends && person.acompanante) {
+          const companion = card.querySelector(
+            'input[name="acompanante_' + CSS.escape(person.id) + '"]:checked'
+          );
+
+          if (!companion) {
+            alert('Indica si ' + person.nombre + ' llevará acompañante.');
+            return;
+          }
+
+          response.llevaAcompanante = companion.value === '1';
+
+          if (response.llevaAcompanante) {
+            const input = document.getElementById(
+              'companionInput_' + person.id
+            );
+
+            response.nombreAcompanante = input.value.trim();
+
+            if (!response.nombreAcompanante) {
+              alert(
+                'Escribe el nombre del acompañante de ' +
+                person.nombre +
+                '.'
+              );
+              input.focus();
+              return;
+            }
+          }
+        }
+
+        if (attends && person.ninos) {
+          const select = document.getElementById('children_' + person.id);
+
+          if (select) {
+            response.numeroNinos = Number(select.value) || 0;
+
+            const names = card.querySelectorAll(
+              '[data-child-name="' + CSS.escape(person.id) + '"]'
+            );
+            const ages = card.querySelectorAll(
+              '[data-child-age="' + CSS.escape(person.id) + '"]'
+            );
+
+            for (let i = 0; i < response.numeroNinos; i++) {
+              response.ninosDetalle.push({
+                nombre: names[i] ? names[i].value.trim() : '',
+                edad: ages[i] ? ages[i].value : ''
+              });
+            }
+          }
+        }
+
+        respuestas.push(response);
+      }
+
+      if (!respuestas.length) {
+        alert('Selecciona Sí o No para al menos una persona.');
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = 'Guardando…';
+      statusMessage.innerHTML =
+        '<div class="rsvp-message">Registrando tu confirmación…</div>';
+
+      const requestId = makeRequestId();
+
+      const payload = {
+        requestId,
+        token: invitationData.token,
+        respondidoPorId: invitationData.seleccionado,
+        respuestas
+      };
+
+      try {
+        submitPost(requestId, payload);
+        await waitForReceipt(requestId);
+        showThankYou();
+      } catch (error) {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Guardar confirmación';
+        statusMessage.innerHTML =
+          '<div class="rsvp-error">' + escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function submitPost(requestId, payload) {
+      if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+        throw new Error(
+          'Falta configurar la URL de Apps Script dentro de rsvp.html.'
+        );
+      }
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = API_URL;
+      form.target = 'rsvpPostTarget';
+      form.style.display = 'none';
+
+      const requestInput = document.createElement('input');
+      requestInput.type = 'hidden';
+      requestInput.name = 'requestId';
+      requestInput.value = requestId;
+
+      const payloadInput = document.createElement('input');
+      payloadInput.type = 'hidden';
+      payloadInput.name = 'payload';
+      payloadInput.value = JSON.stringify(payload);
+
+      form.appendChild(requestInput);
+      form.appendChild(payloadInput);
+      document.body.appendChild(form);
+      form.submit();
+
+      setTimeout(() => form.remove(), 1000);
+    }
+
+    async function waitForReceipt(requestId) {
+      const started = Date.now();
+
+      while (Date.now() - started < 20000) {
+        await sleep(700);
+
+        const response = await jsonp({
+          action: 'estado',
+          requestId
+        });
+
+        if (response.estado === 'guardado') return;
+
+        if (response.estado === 'error') {
+          throw new Error(
+            response.mensaje ||
+            'No pudimos guardar tu confirmación.'
+          );
+        }
+      }
+
+      throw new Error(
+        'La confirmación tardó demasiado. Revisa tu conexión e inténtalo nuevamente.'
+      );
+    }
+
+    function showThankYou() {
+      app.innerHTML = `
+        <section class="thank-you">
+          <div class="thank-you__card">
+            <p class="eyebrow">RSVP recibido</p>
+
+            <p class="thank-you__names">
+              Dafne <span>&</span> Armando
+            </p>
+
+            <h1>Gracias por tu confirmación</h1>
+
+            <p class="thank-you__copy">
+              Hemos registrado correctamente tu respuesta.
+              Gracias por acompañarnos en este momento tan importante.
+            </p>
+
+            <a class="button button--primary" href="${HOME_URL}">
+              Volver a la invitación
+            </a>
+
+            <p class="thank-you__note">
+              Regresando a la invitación en unos segundos…
+            </p>
+          </div>
+        </section>
+      `;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      setTimeout(() => {
+        window.location.href = HOME_URL;
+      }, 4500);
+    }
+
+    function jsonp(params) {
+      return new Promise((resolve, reject) => {
+        if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+          reject(
+            new Error(
+              'Falta configurar la URL de Apps Script dentro de rsvp.html.'
+            )
+          );
+          return;
+        }
+
+        const callbackName =
+          '__rsvpCallback_' +
+          Date.now() +
+          '_' +
+          Math.random().toString(36).slice(2);
+
+        const script = document.createElement('script');
+
+        const url = new URL(API_URL);
+        Object.entries(params).forEach(([key, value]) => {
+          url.searchParams.set(key, value);
+        });
+        url.searchParams.set('callback', callbackName);
+        url.searchParams.set('_', Date.now());
+
+        let finished = false;
+
+        const cleanup = () => {
+          if (finished) return;
+          finished = true;
+          delete window[callbackName];
+          script.remove();
+          clearTimeout(timeout);
+        };
+
+        window[callbackName] = data => {
+          cleanup();
+
+          if (!data || data.ok === false) {
+            reject(
+              new Error(
+                data && data.mensaje
+                  ? data.mensaje
+                  : 'No pudimos comunicarnos con el sistema de confirmación.'
+              )
+            );
+            return;
+          }
+
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(
+            new Error(
+              'No pudimos comunicarnos con el sistema de confirmación.'
+            )
+          );
+        };
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('La conexión tardó demasiado.'));
+        }, 15000);
+
+        script.src = url.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    function showSearchError(error) {
+      results.innerHTML =
+        '<div class="rsvp-error">' + escapeHtml(error.message) + '</div>';
+    }
+
+    function makeRequestId() {
+      if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+
+      return (
+        Date.now().toString(36) +
+        '_' +
+        Math.random().toString(36).slice(2) +
+        Math.random().toString(36).slice(2)
+      );
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = String(value || '');
+      return div.innerHTML;
+    }
+
+    function escapeAttr(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>
