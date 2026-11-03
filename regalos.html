@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Mesa de regalos y experiencias de Dafne y Armando."
+  >
+
+  <title>Mesa de regalos | Dafne y Armando</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="regalos.css">
+</head>
+
+<body class="registry-page">
+  <div class="registry-layout">
+    <aside class="registry-sidebar" aria-label="Navegación de la mesa de regalos">
+      <a
+        class="registry-sidebar__back"
+        id="backToInvitation"
+        href="index.html?vista=interior#regalos"
+      >
+        <span aria-hidden="true">←</span>
+        Regresar a la invitación
+      </a>
+
+      <div class="registry-brand">
+        <div class="registry-brand__monogram" aria-hidden="true">
+          <img src="images/sello-personalizado.png" alt="">
+        </div>
+        <p class="eyebrow">Dafne y Armando</p>
+        <h1>Mesa de regalos</h1>
+        <p>
+          Gracias por ayudarnos a construir recuerdos y comenzar esta nueva etapa.
+        </p>
+      </div>
+
+      <nav class="registry-nav" id="registryNavigation" aria-label="Categorías">
+        <button class="registry-nav__item is-active" type="button" data-view="experiencias" aria-pressed="true">
+          <span>Experiencias</span>
+          <small data-view-count="experiencias"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="libre" aria-pressed="false">
+          <span>Aportación libre</span>
+          <small data-view-count="libre"></small>
+        </button>
+
+        <span class="registry-nav__divider" aria-hidden="true"></span>
+
+        <button class="registry-nav__item" type="button" data-view="aventuras" aria-pressed="false">
+          <span>Aventuras</span>
+          <small data-view-count="aventuras"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="equipaje" aria-pressed="false">
+          <span>Equipaje</span>
+          <small data-view-count="equipaje"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="tecnologia" aria-pressed="false">
+          <span>Tecnología</span>
+          <small data-view-count="tecnologia"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="cocina" aria-pressed="false">
+          <span>Cocina</span>
+          <small data-view-count="cocina"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="hogar" aria-pressed="false">
+          <span>Hogar</span>
+          <small data-view-count="hogar"></small>
+        </button>
+
+        <button class="registry-nav__item" type="button" data-view="bienestar" aria-pressed="false">
+          <span>Descanso y bienestar</span>
+          <small data-view-count="bienestar"></small>
+        </button>
+      </nav>
+
+      <button class="registry-tour-launcher" id="startTourButton" type="button">
+        <span class="registry-tour-launcher__icon" aria-hidden="true">?</span>
+        <span>
+          <strong>¿Cómo funciona?</strong>
+          <small>Ver recorrido guiado</small>
+        </span>
+      </button>
+
+      <button class="registry-cart-button" id="openCartButton" type="button">
+        <span>Ver carrito</span>
+        <span class="registry-cart-button__count" id="cartCount" aria-label="0 artículos">0</span>
+      </button>
+
+      <p class="registry-sidebar__date">20 · 03 · 2027</p>
+    </aside>
+
+    <main class="registry-main">
+      <header class="registry-hero">
+        <p class="eyebrow" id="viewEyebrow">Nuestra luna de miel</p>
+        <h2 id="viewTitle">Regálanos recuerdos</h2>
+        <p class="registry-hero__description" id="viewDescription">
+          Cada experiencia se convertirá en una historia que recordaremos juntos.
+        </p>
+
+        <div class="registry-toolbar" id="catalogToolbar">
+          <div class="registry-mode-filters" id="modeFilters" aria-label="Filtrar por modalidad">
+            <button type="button" data-mode="all" aria-pressed="false">Todos</button>
+            <button type="button" data-mode="Completo" aria-pressed="false">Completos</button>
+            <button class="is-active" type="button" data-mode="Colaborativo" aria-pressed="true">Cooperativos</button>
+          </div>
+        </div>
+      </header>
+
+      <p class="registry-status" id="giftCatalogStatus" role="status">
+        Preparando nuestra mesa de regalos…
+      </p>
+
+      <section class="registry-results" id="giftCatalog" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <div class="registry-cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <aside
+    class="registry-cart"
+    id="cartDrawer"
+    aria-labelledby="cartTitle"
+    aria-hidden="true"
+  >
+    <div class="registry-cart__header">
+      <div>
+        <p class="eyebrow">Tu selección</p>
+        <h2 id="cartTitle">Carrito de regalos</h2>
+      </div>
+
+      <button class="registry-icon-button" id="closeCartButton" type="button" aria-label="Cerrar carrito">
+        ×
+      </button>
+    </div>
+
+    <div class="registry-cart__items" id="cartItems"></div>
+
+    <div class="registry-cart__footer">
+      <div class="registry-cart__total">
+        <span>Total</span>
+        <strong id="cartTotal">$0 MXN</strong>
+      </div>
+
+      <button class="registry-checkout-button" id="checkoutButton" type="button" disabled>
+        Continuar al pago
+      </button>
+
+      <p>
+        El pago se procesará de forma segura mediante Mercado Pago.
+      </p>
+    </div>
+  </aside>
+
+  <div class="registry-tour" id="registryTour" hidden>
+    <div class="registry-tour__shade" aria-hidden="true"></div>
+    <div class="registry-tour__focus" id="tourFocus" aria-hidden="true"></div>
+
+    <section
+      class="registry-tour__card"
+      id="tourCard"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tourTitle"
+      aria-describedby="tourText"
+      tabindex="-1"
+    >
+      <div class="registry-tour__step" id="tourStep">1 de 5</div>
+      <p class="eyebrow" id="tourEyebrow">Bienvenidos</p>
+      <h2 id="tourTitle">Una mesa, tres formas de regalar</h2>
+      <p id="tourText"></p>
+
+      <div class="registry-tour__legend" id="tourLegend" aria-label="Tipos de regalo">
+        <span><i class="registry-tour__dot registry-tour__dot--complete"></i>Completo</span>
+        <span><i class="registry-tour__dot registry-tour__dot--cooperative"></i>Cooperativo</span>
+        <span><i class="registry-tour__dot registry-tour__dot--free"></i>Libre</span>
+      </div>
+
+      <div class="registry-tour__actions">
+        <button class="registry-tour__skip" id="skipTourButton" type="button">Omitir recorrido</button>
+        <div>
+          <button class="registry-tour__back" id="previousTourButton" type="button">Atrás</button>
+          <button class="registry-tour__next" id="nextTourButton" type="button">Siguiente</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="registry-toast" id="registryToast" role="status" aria-live="polite" hidden></div>
+
+  <noscript>
+    <p class="registry-noscript">
+      Activa JavaScript para consultar y seleccionar los regalos.
+    </p>
+  </noscript>
+
+  <script src="regalos.js"></script>
+</body>
+</html>
