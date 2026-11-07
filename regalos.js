@@ -4,6 +4,8 @@ const CHECKOUT_API_URL =
   'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/checkout';
 const ORDER_STATUS_API_URL =
   'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/order-status';
+const RECONCILE_ORDER_API_URL =
+  'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/reconcile-order';
 
 const CART_STORAGE_KEY = 'dafne-armando-regalos-cart-v1';
 const TOUR_STORAGE_KEY = 'dafne-armando-regalos-tour-seen-v1';
@@ -786,17 +788,19 @@ function getPaymentReturn() {
   const parameters = new URLSearchParams(window.location.search);
   const expectedState = parameters.get('pago');
   const orderToken = parameters.get('orden');
+  const paymentId = parameters.get('payment_id') || parameters.get('collection_id');
 
   if (!expectedState || !orderToken) return null;
-  return { expectedState, orderToken };
+  return { expectedState, orderToken, paymentId };
 }
 
-function rememberPendingOrder(orderToken) {
+function rememberPendingOrder(orderToken, paymentId = null) {
   if (!orderToken) return;
 
   try {
     localStorage.setItem(PENDING_ORDER_STORAGE_KEY, JSON.stringify({
       orderToken,
+      paymentId,
       savedAt: Date.now()
     }));
   } catch {
@@ -822,7 +826,8 @@ function loadPendingOrder() {
 
     return {
       expectedState: 'pendiente',
-      orderToken: pendingOrder.orderToken
+      orderToken: pendingOrder.orderToken,
+      paymentId: pendingOrder.paymentId || null
     };
   } catch {
     return null;
@@ -882,6 +887,23 @@ async function requestOrderStatus(orderToken) {
   return data.order;
 }
 
+async function reconcileReturnedPayment(orderToken, paymentId) {
+  if (!paymentId) return;
+
+  const response = await fetch(RECONCILE_ORDER_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ orderToken, paymentId })
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.ok) {
+    throw new Error(data.message || 'No fue posible conciliar el pago.');
+  }
+}
+
 function describeOrder(order) {
   const names = Array.isArray(order.items)
     ? order.items.map((item) => item.name).filter(Boolean)
@@ -921,7 +943,7 @@ async function monitorPendingOrder(paymentReturn, showInitialResult = true) {
     'preference_error'
   ]);
 
-  rememberPendingOrder(paymentReturn.orderToken);
+  rememberPendingOrder(paymentReturn.orderToken, paymentReturn.paymentId);
 
   if (showInitialResult) {
     openPaymentResult();
@@ -934,6 +956,19 @@ async function monitorPendingOrder(paymentReturn, showInitialResult = true) {
   }
 
   let firstSuccessfulCheck = true;
+
+  // En sandbox Mercado Pago no envía webhooks reales. El payment_id de la URL
+  // de retorno permite que el Worker consulte y valide el pago directamente.
+  if (paymentReturn.paymentId) {
+    try {
+      await reconcileReturnedPayment(
+        paymentReturn.orderToken,
+        paymentReturn.paymentId
+      );
+    } catch (error) {
+      console.error('No se pudo conciliar el pago devuelto:', error);
+    }
+  }
 
   // Revisa cada 5 segundos durante el primer minuto y después cada 15 segundos.
   // Si el invitado sale de la página, el token queda guardado y la verificación
