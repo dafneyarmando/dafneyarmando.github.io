@@ -1,5 +1,7 @@
 const GIFTS_API_URL =
   'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/gifts';
+const CHECKOUT_API_URL =
+  'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/checkout';
 
 const CART_STORAGE_KEY = 'dafne-armando-regalos-cart-v1';
 const TOUR_STORAGE_KEY = 'dafne-armando-regalos-tour-seen-v1';
@@ -88,6 +90,9 @@ const cartItems = document.getElementById('cartItems');
 const cartCount = document.getElementById('cartCount');
 const cartTotal = document.getElementById('cartTotal');
 const checkoutButton = document.getElementById('checkoutButton');
+const guestNameInput = document.getElementById('guestName');
+const dedicationInput = document.getElementById('dedication');
+const checkoutError = document.getElementById('checkoutError');
 const registryToast = document.getElementById('registryToast');
 const startTourButton = document.getElementById('startTourButton');
 const registryTour = document.getElementById('registryTour');
@@ -152,6 +157,7 @@ let cart = loadCart();
 let toastTimeout;
 let activeTourStep = 0;
 let tourPositionTimeout;
+let checkoutInProgress = false;
 
 function isExperience(gift) {
   return (
@@ -712,7 +718,7 @@ function renderCart() {
   cartCount.textContent = unitCount;
   cartCount.setAttribute('aria-label', `${unitCount} artículos`);
   cartTotal.textContent = `${formatMoney(getCartTotal())} MXN`;
-  checkoutButton.disabled = cart.length === 0;
+  checkoutButton.disabled = cart.length === 0 || checkoutInProgress;
   cartItems.replaceChildren();
 
   if (cart.length === 0) {
@@ -902,6 +908,8 @@ function goToPreviousTourStep() {
 
 function buildCheckoutPayload() {
   return {
+    guestName: guestNameInput.value.trim(),
+    dedication: dedicationInput.value.trim(),
     items: cart.map((item) => {
       const checkoutItem = {
         giftId: item.giftId,
@@ -916,6 +924,63 @@ function buildCheckoutPayload() {
       return checkoutItem;
     })
   };
+}
+
+function showCheckoutError(message) {
+  checkoutError.textContent = message;
+  checkoutError.hidden = !message;
+}
+
+async function startCheckout() {
+  const guestName = guestNameInput.value.trim();
+  const dedication = dedicationInput.value.trim();
+
+  showCheckoutError('');
+
+  if (!guestName) {
+    showCheckoutError('Escribe de parte de quién es el regalo.');
+    guestNameInput.focus();
+    return;
+  }
+
+  if (guestName.length > 100 || dedication.length > 500) {
+    showCheckoutError('Revisa la longitud del nombre o del mensaje.');
+    return;
+  }
+
+  if (cart.length === 0 || checkoutInProgress) return;
+
+  checkoutInProgress = true;
+  checkoutButton.textContent = 'Preparando pago…';
+  checkoutButton.setAttribute('aria-busy', 'true');
+  renderCart();
+
+  try {
+    const response = await fetch(CHECKOUT_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(buildCheckoutPayload())
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.ok || !data.checkoutUrl) {
+      throw new Error(data.message || 'No fue posible preparar el pago.');
+    }
+
+    window.location.assign(data.checkoutUrl);
+  } catch (error) {
+    console.error('No se pudo iniciar el pago:', error);
+    showCheckoutError(
+      error.message || 'No fue posible preparar el pago. Intenta nuevamente.'
+    );
+    checkoutInProgress = false;
+    checkoutButton.textContent = 'Continuar con Mercado Pago';
+    checkoutButton.removeAttribute('aria-busy');
+    renderCart();
+  }
 }
 
 async function loadGiftCatalog() {
@@ -977,11 +1042,7 @@ window.addEventListener('resize', () => {
   if (!registryTour.hidden) positionTourCard(TOUR_STEPS[activeTourStep]);
 });
 
-checkoutButton.addEventListener('click', () => {
-  const payload = buildCheckoutPayload();
-  console.log('Pedido listo para Mercado Pago:', payload);
-  showToast('El carrito está listo. Falta conectar este botón con Mercado Pago.');
-});
+checkoutButton.addEventListener('click', startCheckout);
 
 renderCart();
 loadGiftCatalog();

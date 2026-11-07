@@ -149,14 +149,38 @@
     <div class="registry-cart__items" id="cartItems"></div>
 
     <div class="registry-cart__footer">
+      <div class="registry-cart__dedication">
+        <label for="guestName">¿De parte de quién?</label>
+        <input
+          id="guestName"
+          name="guestName"
+          type="text"
+          maxlength="100"
+          autocomplete="name"
+          placeholder="Tu nombre o el de tu familia"
+          required
+        >
+
+        <label for="dedication">Mensaje para Dafne y Armando <span>(opcional)</span></label>
+        <textarea
+          id="dedication"
+          name="dedication"
+          maxlength="500"
+          rows="3"
+          placeholder="Escribe unas palabras para acompañar tu regalo"
+        ></textarea>
+      </div>
+
       <div class="registry-cart__total">
         <span>Total</span>
         <strong id="cartTotal">$0 MXN</strong>
       </div>
 
       <button class="registry-checkout-button" id="checkoutButton" type="button" disabled>
-        Continuar al pago
+        Continuar con Mercado Pago
       </button>
+
+      <p class="registry-checkout-error" id="checkoutError" role="alert" hidden></p>
 
       <p>
         El pago se procesará de forma segura mediante Mercado Pago.
