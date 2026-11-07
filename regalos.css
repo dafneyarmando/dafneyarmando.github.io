@@ -891,6 +891,136 @@ body.registry-page {
   display: none;
 }
 
+/* Confirmación al regresar de Mercado Pago */
+
+body.registry-payment-open {
+  overflow: hidden;
+}
+
+.registry-payment-result[hidden] {
+  display: none;
+}
+
+.registry-payment-result {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.registry-payment-result__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(38, 25, 23, 0.58);
+  backdrop-filter: blur(7px);
+}
+
+.registry-payment-result__card {
+  position: relative;
+  width: min(100%, 540px);
+  padding: clamp(2rem, 6vw, 3.4rem);
+  overflow: hidden;
+  border: 1px solid rgba(127, 63, 57, 0.2);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 90% 5%, rgba(184, 138, 132, 0.2), transparent 32%),
+    #fbf8f6;
+  box-shadow: 0 28px 90px rgba(28, 23, 22, 0.3);
+  text-align: center;
+  outline: none;
+}
+
+.registry-payment-result__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--accent);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+
+.registry-payment-result__icon {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 1.4rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(127, 63, 57, 0.32);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 2rem;
+}
+
+.registry-payment-result[data-state="approved"] .registry-payment-result__icon {
+  border-color: rgba(72, 119, 81, 0.35);
+  background: rgba(72, 119, 81, 0.1);
+  color: #487751;
+}
+
+.registry-payment-result[data-state="failed"] .registry-payment-result__icon,
+.registry-payment-result[data-state="error"] .registry-payment-result__icon {
+  border-color: rgba(143, 47, 43, 0.3);
+  background: rgba(143, 47, 43, 0.08);
+  color: #8f2f2b;
+}
+
+.registry-payment-result__card h2 {
+  margin: 0.55rem 0 0.85rem;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.registry-payment-result__card > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.registry-payment-result__summary {
+  margin-top: 1.25rem !important;
+  padding: 0.8rem 1rem;
+  border-block: 1px solid var(--border);
+  color: var(--accent) !important;
+  font-size: 0.9rem;
+}
+
+.registry-payment-result__continue {
+  min-width: 220px;
+  min-height: 48px;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .registry-payment-result {
+    padding: 0.75rem;
+  }
+
+  .registry-payment-result__card {
+    border-radius: 24px;
+  }
+
+  .registry-payment-result__continue {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .registry-noscript {
   margin: 1rem;
   padding: 1rem;

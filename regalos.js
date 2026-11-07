@@ -2,6 +2,8 @@ const GIFTS_API_URL =
   'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/gifts';
 const CHECKOUT_API_URL =
   'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/checkout';
+const ORDER_STATUS_API_URL =
+  'https://dafne-armando-regalos-api.angulo-chavira90.workers.dev/api/order-status';
 
 const CART_STORAGE_KEY = 'dafne-armando-regalos-cart-v1';
 const TOUR_STORAGE_KEY = 'dafne-armando-regalos-tour-seen-v1';
@@ -94,6 +96,15 @@ const guestNameInput = document.getElementById('guestName');
 const dedicationInput = document.getElementById('dedication');
 const checkoutError = document.getElementById('checkoutError');
 const registryToast = document.getElementById('registryToast');
+const paymentResult = document.getElementById('paymentResult');
+const paymentResultCard = document.getElementById('paymentResultCard');
+const paymentResultIcon = document.getElementById('paymentResultIcon');
+const paymentResultEyebrow = document.getElementById('paymentResultEyebrow');
+const paymentResultTitle = document.getElementById('paymentResultTitle');
+const paymentResultMessage = document.getElementById('paymentResultMessage');
+const paymentResultSummary = document.getElementById('paymentResultSummary');
+const closePaymentResultButton = document.getElementById('closePaymentResult');
+const continueAfterPaymentButton = document.getElementById('continueAfterPayment');
 const startTourButton = document.getElementById('startTourButton');
 const registryTour = document.getElementById('registryTour');
 const tourFocus = document.getElementById('tourFocus');
@@ -769,6 +780,135 @@ function showToast(message) {
   }, 2600);
 }
 
+function getPaymentReturn() {
+  const parameters = new URLSearchParams(window.location.search);
+  const expectedState = parameters.get('pago');
+  const orderToken = parameters.get('orden');
+
+  if (!expectedState || !orderToken) return null;
+  return { expectedState, orderToken };
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function openPaymentResult() {
+  paymentResult.hidden = false;
+  document.body.classList.add('registry-payment-open');
+  paymentResultCard.focus({ preventScroll: true });
+}
+
+function closePaymentResult() {
+  paymentResult.hidden = true;
+  document.body.classList.remove('registry-payment-open');
+}
+
+function setPaymentResult({ state, eyebrow, title, message, summary = '' }) {
+  paymentResult.dataset.state = state;
+  paymentResultIcon.textContent = state === 'approved'
+    ? '✓'
+    : state === 'pending'
+      ? '…'
+      : state === 'failed'
+        ? '×'
+        : '!';
+  paymentResultEyebrow.textContent = eyebrow;
+  paymentResultTitle.textContent = title;
+  paymentResultMessage.textContent = message;
+  paymentResultSummary.textContent = summary;
+  paymentResultSummary.hidden = !summary;
+}
+
+async function requestOrderStatus(orderToken) {
+  const response = await fetch(
+    `${ORDER_STATUS_API_URL}?token=${encodeURIComponent(orderToken)}`,
+    { cache: 'no-store' }
+  );
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.ok || !data.order) {
+    throw new Error(data.message || 'No fue posible verificar el pago.');
+  }
+
+  return data.order;
+}
+
+function describeOrder(order) {
+  const names = Array.isArray(order.items)
+    ? order.items.map((item) => item.name).filter(Boolean)
+    : [];
+  const itemText = names.length === 0
+    ? 'tu regalo'
+    : names.length === 1
+      ? names[0]
+      : `${names.slice(0, 2).join(' y ')}${names.length > 2 ? ` y ${names.length - 2} más` : ''}`;
+
+  return `${formatMoney(order.totalAmountCents)} MXN · ${itemText}`;
+}
+
+async function handlePaymentReturn(paymentReturn) {
+  openPaymentResult();
+  setPaymentResult({
+    state: 'checking',
+    eyebrow: 'Verificando tu regalo',
+    title: 'Un momento, por favor',
+    message: 'Estamos consultando el estado real del pago con nuestra mesa de regalos.'
+  });
+
+  try {
+    let order;
+
+    // Mercado Pago puede regresar al sitio unos segundos antes de que llegue el
+    // webhook. Si esperaba un pago aprobado, damos tiempo a que ambos coincidan.
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      order = await requestOrderStatus(paymentReturn.orderToken);
+      if (order.status === 'approved' || paymentReturn.expectedState !== 'aprobado') break;
+      await wait(1400 + attempt * 500);
+    }
+
+    if (order.status === 'approved') {
+      cart = [];
+      saveCart();
+      renderCart();
+      setPaymentResult({
+        state: 'approved',
+        eyebrow: 'Pago confirmado',
+        title: '¡Gracias por acompañarnos!',
+        message: 'Recibimos tu regalo correctamente. Tu detalle ya forma parte de nuestra nueva etapa.',
+        summary: describeOrder(order)
+      });
+      await loadGiftCatalog(false);
+    } else if (['pending', 'authorized', 'in_process'].includes(order.status)) {
+      setPaymentResult({
+        state: 'pending',
+        eyebrow: 'Pago en proceso',
+        title: 'Estamos esperando la confirmación',
+        message: 'Mercado Pago todavía está procesando el pago. Conservaremos tu carrito hasta recibir la confirmación.',
+        summary: describeOrder(order)
+      });
+    } else {
+      setPaymentResult({
+        state: 'failed',
+        eyebrow: 'Pago no completado',
+        title: 'Tu carrito sigue disponible',
+        message: 'No se registró un pago aprobado. Puedes revisar tu selección e intentarlo nuevamente.',
+        summary: describeOrder(order)
+      });
+    }
+
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
+  } catch (error) {
+    console.error('No se pudo verificar el pedido:', error);
+    setPaymentResult({
+      state: 'error',
+      eyebrow: 'No pudimos verificarlo',
+      title: 'Tu carrito permanece intacto',
+      message: 'Hubo un problema al consultar el estado del pago. Recarga esta página en unos momentos para intentarlo otra vez.'
+    });
+  }
+}
+
 function hasSeenTour() {
   try {
     return localStorage.getItem(TOUR_STORAGE_KEY) === 'true';
@@ -983,7 +1123,7 @@ async function startCheckout() {
   }
 }
 
-async function loadGiftCatalog() {
+async function loadGiftCatalog(allowTour = true) {
   try {
     const response = await fetch(GIFTS_API_URL);
 
@@ -1002,7 +1142,7 @@ async function loadGiftCatalog() {
     renderActiveView();
     giftCatalogStatus.hidden = true;
 
-    window.setTimeout(() => openTour(false), 650);
+    if (allowTour) window.setTimeout(() => openTour(false), 650);
   } catch (error) {
     console.error('No se pudo cargar la mesa de regalos:', error);
     giftCatalogStatus.hidden = false;
@@ -1026,7 +1166,9 @@ closeCartButton.addEventListener('click', closeCart);
 cartBackdrop.addEventListener('click', closeCart);
 
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && cartDrawer.classList.contains('is-open')) {
+  if (event.key === 'Escape' && !paymentResult.hidden) {
+    closePaymentResult();
+  } else if (event.key === 'Escape' && cartDrawer.classList.contains('is-open')) {
     closeCart();
   } else if (event.key === 'Escape' && !registryTour.hidden) {
     closeTour(true);
@@ -1043,6 +1185,10 @@ window.addEventListener('resize', () => {
 });
 
 checkoutButton.addEventListener('click', startCheckout);
+closePaymentResultButton.addEventListener('click', closePaymentResult);
+continueAfterPaymentButton.addEventListener('click', closePaymentResult);
 
 renderCart();
-loadGiftCatalog();
+const paymentReturn = getPaymentReturn();
+loadGiftCatalog(!paymentReturn);
+if (paymentReturn) handlePaymentReturn(paymentReturn);

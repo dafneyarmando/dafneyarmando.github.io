@@ -188,6 +188,45 @@
     </div>
   </aside>
 
+  <div class="registry-payment-result" id="paymentResult" hidden>
+    <div class="registry-payment-result__backdrop" aria-hidden="true"></div>
+
+    <section
+      class="registry-payment-result__card"
+      id="paymentResultCard"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="paymentResultTitle"
+      aria-describedby="paymentResultMessage"
+      tabindex="-1"
+    >
+      <button
+        class="registry-payment-result__close"
+        id="closePaymentResult"
+        type="button"
+        aria-label="Cerrar mensaje"
+      >
+        ×
+      </button>
+
+      <div class="registry-payment-result__icon" id="paymentResultIcon" aria-hidden="true">…</div>
+      <p class="eyebrow" id="paymentResultEyebrow">Verificando tu regalo</p>
+      <h2 id="paymentResultTitle">Un momento, por favor</h2>
+      <p id="paymentResultMessage">
+        Estamos consultando el estado real del pago con nuestra mesa de regalos.
+      </p>
+      <p class="registry-payment-result__summary" id="paymentResultSummary" hidden></p>
+
+      <button
+        class="registry-payment-result__continue"
+        id="continueAfterPayment"
+        type="button"
+      >
+        Seguir viendo regalos
+      </button>
+    </section>
+  </div>
+
   <div class="registry-tour" id="registryTour" hidden>
     <div class="registry-tour__shade" aria-hidden="true"></div>
     <div class="registry-tour__focus" id="tourFocus" aria-hidden="true"></div>
