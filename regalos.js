@@ -18,6 +18,71 @@ const EXPERIENCE_CATEGORIES = new Set([
   'Comidas y bebidas'
 ]);
 
+const EXPERIENCE_GROUPS = [
+  {
+    id: 'tours',
+    number: '01',
+    title: 'Tours y experiencias',
+    description: 'Recorridos y momentos que se convertirán en las historias principales de nuestro viaje.',
+    giftIds: new Set([
+      'tour-por-el-canon-del-sumidero',
+      'tour-chamula-y-zinacantan',
+      'tour-el-chiflon-y-montebello',
+      'tour-palenque-y-roberto-barrios',
+      'clase-de-cocina-chiapaneca'
+    ])
+  },
+  {
+    id: 'camino',
+    number: '02',
+    title: 'El camino y la estancia',
+    description: 'Vuelos, traslados y noches de hospedaje que harán posible cada etapa de la luna de miel.',
+    giftIds: new Set([
+      'nuestros-vuelos',
+      'traslado-a-san-cristobal',
+      'camino-a-palenque',
+      'traslado-al-aeropuerto-de-regreso',
+      'una-noche-en-san-cristobal',
+      'una-noche-en-palenque'
+    ])
+  },
+  {
+    id: 'celebrar',
+    number: '03',
+    title: 'Momentos para celebrar',
+    description: 'Comidas y cenas especiales para brindar, descubrir sabores y recordar el viaje.',
+    giftIds: new Set([
+      'comida-de-bienvenida-en-casa-lum',
+      'cena-romantica-en-casa-lum',
+      'cena-especial-de-despedida',
+      'cena-en-las-pichanchas',
+      'cena-en-sombra-del-agua',
+      'cena-en-maya-canada',
+      'cena-en-don-mucho-s'
+    ])
+  },
+  {
+    id: 'sabores',
+    number: '04',
+    title: 'Sabores del viaje',
+    description: 'Comidas, almuerzos y desayunos que nos acompañarán entre una aventura y la siguiente.',
+    giftIds: new Set([
+      'comida-en-el-campanario',
+      'almuerzo-en-la-lupe',
+      'comida-en-el-chiflon',
+      'comida-durante-el-tour-en-palenque',
+      'comida-en-maya-canada',
+      'comidas-de-viaje-y-aeropuertos',
+      'desayuno-en-las-lolas',
+      'desayuno-en-sarajevo-cafe-jardin',
+      'desayuno-en-sombra-del-agua',
+      'desayuno-en-casa-lum',
+      'desayunos-en-chan-kah',
+      'desayuno-en-cafe-jade'
+    ])
+  }
+];
+
 const VIEW_DEFINITIONS = {
   experiencias: {
     eyebrow: 'Nuestra luna de miel',
@@ -83,6 +148,7 @@ const giftCatalog = document.getElementById('giftCatalog');
 const registryNavigation = document.getElementById('registryNavigation');
 const catalogToolbar = document.getElementById('catalogToolbar');
 const modeFilters = document.getElementById('modeFilters');
+const sharedGiftNotice = document.getElementById('sharedGiftNotice');
 const viewEyebrow = document.getElementById('viewEyebrow');
 const viewTitle = document.getElementById('viewTitle');
 const viewDescription = document.getElementById('viewDescription');
@@ -128,7 +194,7 @@ const TOUR_STEPS = [
     eyebrow: 'Bienvenidos',
     title: 'Una mesa, tres formas de regalar',
     text:
-      'Puedes elegir un regalo completo, cooperar con una parte de una experiencia de mayor valor o hacer una aportación libre. Todo se agrega al mismo carrito.',
+      'Puedes elegir un regalo completo, aportar una parte de un regalo compartido o hacer una aportación libre. Todo se agrega al mismo carrito.',
     showLegend: true
   },
   {
@@ -144,13 +210,13 @@ const TOUR_STEPS = [
     eyebrow: 'Paso 2',
     title: 'Encuentra el tipo de regalo que prefieras',
     text:
-      'Usa estos filtros para ver todos los regalos, solamente los completos o únicamente los cooperativos.',
+      'Usa estos filtros para ver todos los regalos, solamente los completos o únicamente los compartidos.',
     showLegend: false
   },
   {
     target: '.registry-card--collaborative',
     eyebrow: 'Paso 3',
-    title: 'Así funciona un regalo cooperativo',
+    title: 'Así funciona un regalo compartido',
     text:
       'La barra muestra cuánto se ha reunido y cuánto falta. Puedes aportar cualquier múltiplo de $100 sin cubrir la meta completa.',
     showLegend: false
@@ -167,7 +233,7 @@ const TOUR_STEPS = [
 
 let allGifts = [];
 let activeView = 'experiencias';
-let activeMode = 'Colaborativo';
+let activeMode = 'all';
 let cart = loadCart();
 let toastTimeout;
 let activeTourStep = 0;
@@ -289,7 +355,7 @@ function createCardLabels(gift) {
   labels.appendChild(createElement('span', 'registry-card__category', gift.category));
 
   if (gift.mode === 'Colaborativo') {
-    labels.appendChild(createElement('span', 'registry-card__mode registry-card__mode--collaborative', 'Cooperativo'));
+    labels.appendChild(createElement('span', 'registry-card__mode registry-card__mode--collaborative', 'Regalo compartido'));
   }
 
   return labels;
@@ -332,8 +398,16 @@ function createContributionProgress(gift) {
   const progress = createElement('div', 'registry-progress');
   const header = createElement('div', 'registry-progress__header');
   header.append(
-    createElement('span', '', `${percent}% reunido`),
-    createElement('strong', '', formatMoney(goal))
+    createElement(
+      'span',
+      '',
+      remaining === 0
+        ? 'Meta completada'
+        : funded === 0
+          ? 'Disponible para comenzar'
+          : `${percent}% reunido`
+    ),
+    createElement('strong', '', `Meta: ${formatMoney(goal)}`)
   );
 
   const track = createElement('div', 'registry-progress__track');
@@ -343,19 +417,50 @@ function createContributionProgress(gift) {
   track.setAttribute('aria-valuemax', '100');
   track.setAttribute('aria-valuenow', String(percent));
 
+  const preview = createElement('span', 'registry-progress__preview');
+  preview.hidden = true;
+
   const fill = createElement('span', 'registry-progress__fill');
   fill.style.width = `${percent}%`;
-  track.appendChild(fill);
+  track.append(preview, fill);
 
   const detail = createElement(
     'p',
     'registry-progress__detail',
     remaining > 0
-      ? `${formatMoney(funded)} aportados · faltan ${formatMoney(remaining)}`
+      ? funded > 0
+        ? `${formatMoney(funded)} aportados · faltan ${formatMoney(remaining)}`
+        : 'Se completa entre varios invitados · aportaciones desde $100'
       : 'Meta completada. Gracias por hacerlo posible.'
   );
 
-  progress.append(header, track, detail);
+  const previewDetail = createElement('p', 'registry-progress__preview-detail');
+  previewDetail.hidden = true;
+
+  progress.updatePreview = (amountCents) => {
+    const safeAmount = Math.min(
+      remaining,
+      Math.max(0, Number(amountCents) || 0)
+    );
+
+    if (safeAmount === 0 || remaining === 0) {
+      preview.hidden = true;
+      previewDetail.hidden = true;
+      return;
+    }
+
+    const projectedFunded = Math.min(goal, funded + safeAmount);
+    const projectedPercent = goal > 0
+      ? Math.min(100, Math.round((projectedFunded / goal) * 100))
+      : 0;
+
+    preview.style.width = `${projectedPercent}%`;
+    preview.hidden = false;
+    previewDetail.textContent = `Con tu aportación, la meta llegaría al ${projectedPercent}%.`;
+    previewDetail.hidden = false;
+  };
+
+  progress.append(header, track, detail, previewDetail);
   return progress;
 }
 
@@ -364,6 +469,12 @@ function createContributionControls(gift) {
   const serverRemaining = getGiftRemainingCents(gift);
   const cartContribution = getContributionInCart(gift.id);
   const availableToAdd = Math.max(0, serverRemaining - cartContribution);
+  const progress = createContributionProgress(gift);
+  const help = createElement(
+    'p',
+    'registry-contribution__help',
+    'Se completa entre varios invitados. Tú eliges cuánto aportar sin pagar el total.'
+  );
 
   const label = createElement('label', 'registry-contribution__field');
   label.appendChild(createElement('span', '', 'Tu aportación'));
@@ -387,10 +498,25 @@ function createContributionControls(gift) {
   const button = createElement(
     'button',
     'registry-card__add registry-card__add--wide',
-    availableToAdd < 10000 ? 'Meta completada' : 'Agregar aportación'
+    availableToAdd < 10000 ? 'Meta completada' : 'Aportar $100'
   );
   button.type = 'button';
   button.disabled = availableToAdd < 10000;
+
+  const updateContributionPreview = () => {
+    const amountPesos = validateContribution(input.value);
+    const amountCents = amountPesos ? amountPesos * 100 : 0;
+    const validAmount = amountCents > 0 && amountCents <= availableToAdd;
+
+    progress.updatePreview(cartContribution + (validAmount ? amountCents : 0));
+    if (!button.disabled) {
+      button.textContent = validAmount
+        ? `Aportar ${formatMoney(amountCents)}`
+        : 'Aportar una parte';
+    }
+  };
+
+  input.addEventListener('input', updateContributionPreview);
   button.addEventListener('click', () => {
     const amountPesos = validateContribution(input.value);
 
@@ -409,7 +535,8 @@ function createContributionControls(gift) {
     addContribution(gift, amountPesos * 100, 'contribution');
   });
 
-  wrapper.append(createContributionProgress(gift), label, button);
+  wrapper.append(help, progress, label, button);
+  updateContributionPreview();
   return wrapper;
 }
 
@@ -504,6 +631,48 @@ function validateContribution(value) {
     : null;
 }
 
+function createExperienceSection(group, gifts) {
+  const section = createElement(
+    'section',
+    `registry-experience-section registry-experience-section--${group.id}`
+  );
+  const heading = createElement('header', 'registry-experience-section__header');
+  const number = createElement('span', 'registry-experience-section__number', group.number);
+  const copy = createElement('div', 'registry-experience-section__copy');
+  const title = createElement('h3', '', group.title);
+  const description = createElement('p', '', group.description);
+  copy.append(title, description);
+  heading.append(number, copy);
+
+  const grid = createElement('div', 'registry-experience-grid');
+  gifts.forEach((gift) => grid.appendChild(createGiftCard(gift)));
+  section.append(heading, grid);
+  return section;
+}
+
+function renderExperienceGroups(gifts) {
+  giftCatalog.className = 'registry-results registry-results--grouped';
+  const assignedIds = new Set();
+
+  EXPERIENCE_GROUPS.forEach((group) => {
+    const groupGifts = gifts.filter((gift) => group.giftIds.has(gift.id));
+    if (groupGifts.length === 0) return;
+
+    groupGifts.forEach((gift) => assignedIds.add(gift.id));
+    giftCatalog.appendChild(createExperienceSection(group, groupGifts));
+  });
+
+  const unassigned = gifts.filter((gift) => !assignedIds.has(gift.id));
+  if (unassigned.length > 0) {
+    giftCatalog.appendChild(createExperienceSection({
+      id: 'otros',
+      number: '05',
+      title: 'Otros detalles del viaje',
+      description: 'Más formas de acompañarnos en esta nueva aventura.'
+    }, unassigned));
+  }
+}
+
 function renderActiveView() {
   const definition = VIEW_DEFINITIONS[activeView] || VIEW_DEFINITIONS.experiencias;
   const matchingGifts = allGifts
@@ -515,6 +684,9 @@ function renderActiveView() {
   viewTitle.textContent = definition.title;
   viewDescription.textContent = definition.description;
   catalogToolbar.hidden = activeView === 'libre';
+  sharedGiftNotice.hidden = activeView === 'libre'
+    || activeMode === 'Completo'
+    || !allGifts.some((gift) => definition.matches(gift) && gift.mode === 'Colaborativo');
   giftCatalog.replaceChildren();
 
   if (activeView === 'libre') {
@@ -532,6 +704,11 @@ function renderActiveView() {
       createElement('p', '', 'Elige “Todos” o “Completos” para ver las demás opciones de esta sección.')
     );
     giftCatalog.appendChild(empty);
+    return;
+  }
+
+  if (activeView === 'experiencias') {
+    renderExperienceGroups(matchingGifts);
     return;
   }
 
@@ -1138,7 +1315,7 @@ function openTour(force = false) {
   if (!allGifts.length || (!force && hasSeenTour())) return;
 
   setActiveView('experiencias');
-  setActiveMode('Colaborativo');
+  setActiveMode('all');
   activeTourStep = 0;
   registryTour.hidden = false;
   document.body.classList.add('registry-tour-open');

@@ -1791,3 +1791,169 @@ body.registry-payment-open {
     font-size: 2.2rem;
   }
 }
+
+/* Explicación visible de regalos compartidos */
+
+.registry-shared-explainer[hidden] {
+  display: none;
+}
+
+.registry-shared-explainer {
+  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
+  padding: clamp(1.15rem, 2.5vw, 1.65rem);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(127, 63, 57, 0.22);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 0 50%, rgba(184, 138, 132, 0.16), transparent 30%),
+    rgba(255, 255, 255, 0.58);
+}
+
+.registry-shared-explainer__mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(127, 63, 57, 0.28);
+  border-radius: 50%;
+  color: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 1.55rem;
+}
+
+.registry-shared-explainer .eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.68rem;
+}
+
+.registry-shared-explainer h3 {
+  margin: 0;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 500;
+}
+
+.registry-shared-explainer p:last-child {
+  max-width: 820px;
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* Secciones de experiencias */
+
+#giftCatalog.registry-results--grouped {
+  display: block;
+}
+
+.registry-experience-section + .registry-experience-section {
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+.registry-experience-section__header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.85rem;
+  border-bottom: 1px solid rgba(127, 63, 57, 0.2);
+}
+
+.registry-experience-section__number {
+  padding-top: 0.2rem;
+  color: var(--accent);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+}
+
+.registry-experience-section__copy h3 {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.7vw, 2rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.registry-experience-section__copy p {
+  max-width: 700px;
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.registry-experience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+/* Comprensión y previsualización de aportaciones */
+
+.registry-contribution__help {
+  margin: 0 0 0.8rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid rgba(127, 63, 57, 0.45);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.registry-progress__track {
+  position: relative;
+}
+
+.registry-progress__preview,
+.registry-progress__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.registry-progress__preview {
+  z-index: 1;
+  display: block;
+  border-radius: inherit;
+  background: rgba(184, 138, 132, 0.38);
+  transition: width 0.25s ease;
+}
+
+.registry-progress__preview[hidden] {
+  display: none;
+}
+
+.registry-progress__fill {
+  z-index: 2;
+}
+
+.registry-progress__preview-detail {
+  margin: 0.4rem 0 0;
+  color: var(--accent);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.registry-progress__preview-detail[hidden] {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .registry-experience-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .registry-shared-explainer {
+    grid-template-columns: 1fr;
+  }
+
+  .registry-shared-explainer__mark {
+    width: 44px;
+    height: 44px;
+  }
+
+  .registry-experience-grid {
+    grid-template-columns: 1fr;
+  }
+}

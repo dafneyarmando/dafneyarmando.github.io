@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="regalos.css">
+  <link rel="stylesheet" href="regalos.css?v=20261107-5">
 </head>
 
 <body class="registry-page">
@@ -112,12 +112,24 @@
 
         <div class="registry-toolbar" id="catalogToolbar">
           <div class="registry-mode-filters" id="modeFilters" aria-label="Filtrar por modalidad">
-            <button type="button" data-mode="all" aria-pressed="false">Todos</button>
+            <button class="is-active" type="button" data-mode="all" aria-pressed="true">Todos</button>
             <button type="button" data-mode="Completo" aria-pressed="false">Completos</button>
-            <button class="is-active" type="button" data-mode="Colaborativo" aria-pressed="true">Cooperativos</button>
+            <button type="button" data-mode="Colaborativo" aria-pressed="false">Compartidos</button>
           </div>
         </div>
       </header>
+
+      <aside class="registry-shared-explainer" id="sharedGiftNotice">
+        <span class="registry-shared-explainer__mark" aria-hidden="true">÷</span>
+        <div>
+          <p class="eyebrow">Un regalo entre varios</p>
+          <h3>No tienes que cubrir el precio completo</h3>
+          <p>
+            En los regalos marcados como <strong>“Compartido”</strong>, cada invitado elige
+            cuánto aportar desde $100. La barra se completa poco a poco con todas las aportaciones.
+          </p>
+        </div>
+      </aside>
 
       <p class="registry-status" id="giftCatalogStatus" role="status">
         Preparando nuestra mesa de regalos…
@@ -247,7 +259,7 @@
 
       <div class="registry-tour__legend" id="tourLegend" aria-label="Tipos de regalo">
         <span><i class="registry-tour__dot registry-tour__dot--complete"></i>Completo</span>
-        <span><i class="registry-tour__dot registry-tour__dot--cooperative"></i>Cooperativo</span>
+        <span><i class="registry-tour__dot registry-tour__dot--cooperative"></i>Compartido</span>
         <span><i class="registry-tour__dot registry-tour__dot--free"></i>Libre</span>
       </div>
 
@@ -269,6 +281,6 @@
     </p>
   </noscript>
 
-  <script src="regalos.js?v=20261107-4"></script>
+  <script src="regalos.js?v=20261107-5"></script>
 </body>
 </html>
