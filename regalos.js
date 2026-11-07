@@ -7,6 +7,8 @@ const ORDER_STATUS_API_URL =
 
 const CART_STORAGE_KEY = 'dafne-armando-regalos-cart-v1';
 const TOUR_STORAGE_KEY = 'dafne-armando-regalos-tour-seen-v1';
+const PENDING_ORDER_STORAGE_KEY = 'dafne-armando-regalos-pending-order-v1';
+const PENDING_ORDER_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 const EXPERIENCE_CATEGORIES = new Set([
   'Viajes y transporte',
@@ -789,6 +791,52 @@ function getPaymentReturn() {
   return { expectedState, orderToken };
 }
 
+function rememberPendingOrder(orderToken) {
+  if (!orderToken) return;
+
+  try {
+    localStorage.setItem(PENDING_ORDER_STORAGE_KEY, JSON.stringify({
+      orderToken,
+      savedAt: Date.now()
+    }));
+  } catch {
+    // La confirmación todavía funciona durante esta visita aunque el navegador
+    // bloquee el almacenamiento local.
+  }
+}
+
+function loadPendingOrder() {
+  try {
+    const pendingOrder = JSON.parse(localStorage.getItem(PENDING_ORDER_STORAGE_KEY));
+    const age = Date.now() - Number(pendingOrder?.savedAt);
+
+    if (
+      !pendingOrder?.orderToken ||
+      !Number.isFinite(age) ||
+      age < 0 ||
+      age > PENDING_ORDER_MAX_AGE_MS
+    ) {
+      localStorage.removeItem(PENDING_ORDER_STORAGE_KEY);
+      return null;
+    }
+
+    return {
+      expectedState: 'pendiente',
+      orderToken: pendingOrder.orderToken
+    };
+  } catch {
+    return null;
+  }
+}
+
+function forgetPendingOrder() {
+  try {
+    localStorage.removeItem(PENDING_ORDER_STORAGE_KEY);
+  } catch {
+    // No es indispensable borrar el recordatorio para mostrar la confirmación.
+  }
+}
+
 function wait(milliseconds) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
@@ -847,65 +895,105 @@ function describeOrder(order) {
   return `${formatMoney(order.totalAmountCents)} MXN · ${itemText}`;
 }
 
-async function handlePaymentReturn(paymentReturn) {
+async function confirmApprovedOrder(order) {
+  forgetPendingOrder();
+  cart = [];
+  saveCart();
+  renderCart();
   openPaymentResult();
   setPaymentResult({
-    state: 'checking',
-    eyebrow: 'Verificando tu regalo',
-    title: 'Un momento, por favor',
-    message: 'Estamos consultando el estado real del pago con nuestra mesa de regalos.'
+    state: 'approved',
+    eyebrow: 'Pago confirmado',
+    title: '¡Gracias por acompañarnos!',
+    message: 'Recibimos tu regalo correctamente. Tu detalle ya forma parte de nuestra nueva etapa.',
+    summary: describeOrder(order)
   });
+  await loadGiftCatalog(false);
+}
 
-  try {
-    let order;
+async function monitorPendingOrder(paymentReturn, showInitialResult = true) {
+  const finalFailureStatuses = new Set([
+    'rejected',
+    'cancelled',
+    'refunded',
+    'charged_back',
+    'payment_mismatch',
+    'preference_error'
+  ]);
 
-    // Mercado Pago puede regresar al sitio unos segundos antes de que llegue el
-    // webhook. Si esperaba un pago aprobado, damos tiempo a que ambos coincidan.
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      order = await requestOrderStatus(paymentReturn.orderToken);
-      if (order.status === 'approved' || paymentReturn.expectedState !== 'aprobado') break;
-      await wait(1400 + attempt * 500);
-    }
+  rememberPendingOrder(paymentReturn.orderToken);
 
-    if (order.status === 'approved') {
-      cart = [];
-      saveCart();
-      renderCart();
-      setPaymentResult({
-        state: 'approved',
-        eyebrow: 'Pago confirmado',
-        title: '¡Gracias por acompañarnos!',
-        message: 'Recibimos tu regalo correctamente. Tu detalle ya forma parte de nuestra nueva etapa.',
-        summary: describeOrder(order)
-      });
-      await loadGiftCatalog(false);
-    } else if (['pending', 'authorized', 'in_process'].includes(order.status)) {
-      setPaymentResult({
-        state: 'pending',
-        eyebrow: 'Pago en proceso',
-        title: 'Estamos esperando la confirmación',
-        message: 'Mercado Pago todavía está procesando el pago. Conservaremos tu carrito hasta recibir la confirmación.',
-        summary: describeOrder(order)
-      });
-    } else {
-      setPaymentResult({
-        state: 'failed',
-        eyebrow: 'Pago no completado',
-        title: 'Tu carrito sigue disponible',
-        message: 'No se registró un pago aprobado. Puedes revisar tu selección e intentarlo nuevamente.',
-        summary: describeOrder(order)
-      });
-    }
-
-    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
-  } catch (error) {
-    console.error('No se pudo verificar el pedido:', error);
+  if (showInitialResult) {
+    openPaymentResult();
     setPaymentResult({
-      state: 'error',
-      eyebrow: 'No pudimos verificarlo',
-      title: 'Tu carrito permanece intacto',
-      message: 'Hubo un problema al consultar el estado del pago. Recarga esta página en unos momentos para intentarlo otra vez.'
+      state: 'checking',
+      eyebrow: 'Verificando tu regalo',
+      title: 'Un momento, por favor',
+      message: 'Estamos consultando el estado real del pago con nuestra mesa de regalos.'
     });
+  }
+
+  let firstSuccessfulCheck = true;
+
+  // Revisa cada 5 segundos durante el primer minuto y después cada 15 segundos.
+  // Si el invitado sale de la página, el token queda guardado y la verificación
+  // se reanuda cuando vuelva a entrar a la mesa de regalos.
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      const order = await requestOrderStatus(paymentReturn.orderToken);
+
+      if (firstSuccessfulCheck) {
+        firstSuccessfulCheck = false;
+        window.history.replaceState(
+          {},
+          document.title,
+          `${window.location.pathname}${window.location.hash}`
+        );
+      }
+
+      if (order.status === 'approved') {
+        await confirmApprovedOrder(order);
+        return;
+      }
+
+      if (finalFailureStatuses.has(order.status)) {
+        forgetPendingOrder();
+        openPaymentResult();
+        setPaymentResult({
+          state: 'failed',
+          eyebrow: 'Pago no completado',
+          title: 'Tu carrito sigue disponible',
+          message: 'No se registró un pago aprobado. Puedes revisar tu selección e intentarlo nuevamente.',
+          summary: describeOrder(order)
+        });
+        return;
+      }
+
+      if (showInitialResult && attempt === 0) {
+        setPaymentResult({
+          state: 'pending',
+          eyebrow: 'Pago en proceso',
+          title: 'Puedes seguir viendo regalos',
+          message: 'Seguiremos verificando el pago en segundo plano. Cuando se confirme, actualizaremos la mesa y te avisaremos aquí.',
+          summary: describeOrder(order)
+        });
+      } else if (!showInitialResult && attempt === 0) {
+        showToast('Seguimos verificando tu pago pendiente.');
+      }
+    } catch (error) {
+      console.error('No se pudo verificar temporalmente el pedido:', error);
+
+      if (showInitialResult && attempt === 0) {
+        setPaymentResult({
+          state: 'error',
+          eyebrow: 'Verificación temporalmente interrumpida',
+          title: 'Tu carrito permanece intacto',
+          message: 'Volveremos a intentar automáticamente. Puedes cerrar este aviso y seguir viendo regalos.'
+        });
+      }
+    }
+
+    await wait(attempt < 12 ? 5000 : 15000);
   }
 }
 
@@ -1106,10 +1194,11 @@ async function startCheckout() {
 
     const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || !data.ok || !data.checkoutUrl) {
+    if (!response.ok || !data.ok || !data.checkoutUrl || !data.orderToken) {
       throw new Error(data.message || 'No fue posible preparar el pago.');
     }
 
+    rememberPendingOrder(data.orderToken);
     window.location.assign(data.checkoutUrl);
   } catch (error) {
     console.error('No se pudo iniciar el pago:', error);
@@ -1190,5 +1279,10 @@ continueAfterPaymentButton.addEventListener('click', closePaymentResult);
 
 renderCart();
 const paymentReturn = getPaymentReturn();
-loadGiftCatalog(!paymentReturn);
-if (paymentReturn) handlePaymentReturn(paymentReturn);
+const rememberedPendingOrder = paymentReturn ? null : loadPendingOrder();
+const orderToMonitor = paymentReturn || rememberedPendingOrder;
+loadGiftCatalog(!orderToMonitor);
+
+if (orderToMonitor) {
+  monitorPendingOrder(orderToMonitor, Boolean(paymentReturn));
+}
