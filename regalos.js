@@ -456,7 +456,7 @@ function createContributionProgress(gift) {
 
     preview.style.width = `${projectedPercent}%`;
     preview.hidden = false;
-    previewDetail.textContent = `Con tu aportación, la meta llegaría al ${projectedPercent}%.`;
+    previewDetail.textContent = `Vista previa: con tu aportación, la meta llegaría al ${projectedPercent}%.`;
     previewDetail.hidden = false;
   };
 
@@ -536,7 +536,6 @@ function createContributionControls(gift) {
   });
 
   wrapper.append(help, progress, label, button);
-  updateContributionPreview();
   return wrapper;
 }
 
